@@ -29,6 +29,7 @@ iptables -t nat -A PROXY_REDIRECT -p tcp --dport "139" -j ACCEPT # samba
 iptables -t nat -A PROXY_REDIRECT -p tcp --dport "389" -j ACCEPT # radius port
 iptables -t nat -A PROXY_REDIRECT -p tcp --dport "443" -j ACCEPT # aruba
 iptables -t nat -A PROXY_REDIRECT -p tcp --dport "445" -j ACCEPT # samba
+iptables -t nat -A PROXY_REDIRECT -p tcp --dport "464" -j ACCEPT # samba
 iptables -t nat -A PROXY_REDIRECT -p tcp --dport "587" -j ACCEPT # email port
 iptables -t nat -A PROXY_REDIRECT -p tcp --dport "636" -j ACCEPT # ldaps
 iptables -t nat -A PROXY_REDIRECT -p tcp --dport "830" -j ACCEPT # netconf 
@@ -93,6 +94,7 @@ iptables -t nat -A PROXY_INBOUND -p tcp --dport "139" -j RETURN  # samba
 iptables -t nat -A PROXY_INBOUND -p tcp --dport "389" -j RETURN  # radius
 iptables -t nat -A PROXY_INBOUND -p tcp --dport "443" -j RETURN  # aruba
 iptables -t nat -A PROXY_INBOUND -p tcp --dport "445" -j RETURN  # samba
+iptables -t nat -A PROXY_INBOUND -p tcp --dport "464" -j RETURN  # samba
 iptables -t nat -A PROXY_INBOUND -p tcp --dport "587" -j RETURN  # email
 iptables -t nat -A PROXY_INBOUND -p tcp --dport "636" -j RETURN  # ldaps
 iptables -t nat -A PROXY_INBOUND -p tcp --dport "830" -j RETURN  # netconf
