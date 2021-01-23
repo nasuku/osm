@@ -202,6 +202,8 @@ func getHeadersForRoute(method string, headersMap map[string]string) []*xds_rout
 func getWeightedCluster(weightedClusters set.Set, totalClustersWeight int, direction Direction) *xds_route.WeightedCluster {
 	var wc xds_route.WeightedCluster
 	var total int
+
+	log.Debug().Msgf("Fred WeightedClusters=%+v \n", weightedClusters)
 	for clusterInterface := range weightedClusters.Iter() {
 		cluster := clusterInterface.(service.WeightedCluster)
 		clusterName := string(cluster.ClusterName)
@@ -224,6 +226,7 @@ func getWeightedCluster(weightedClusters set.Set, totalClustersWeight int, direc
 	}
 	wc.TotalWeight = &wrappers.UInt32Value{Value: uint32(total)}
 	sort.Stable(clusterWeightByName(wc.Clusters))
+	log.Debug().Msgf("Fred wc=%+v \n", wc)
 	return &wc
 }
 

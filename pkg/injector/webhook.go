@@ -182,6 +182,13 @@ func (wh *webhook) mutate(req *v1beta1.AdmissionRequest) *v1beta1.AdmissionRespo
 	}
 	log.Info().Msgf("Mutation request: (new object: %v) (old object: %v)", string(req.Object.Raw), string(req.OldObject.Raw))
 
+	// Check if location info in present in annotations
+	if ok, locInfo := wh.locationInfo(&pod, req.Namespace); ok {
+		log.Info().Msgf("locInfo=%s pod=%+v", locInfo, pod)
+	} else {
+		log.Info().Msg("no LocInfo")
+	}
+
 	// Start building the response
 	resp := &v1beta1.AdmissionResponse{
 		Allowed: true,
@@ -255,9 +262,40 @@ func (wh *webhook) mustInject(pod *corev1.Pod, namespace string) (bool, error) {
 		}
 	}
 
+	// Check if the POD is annotated for witesandLocation
+	loc := strings.ToLower(pod.ObjectMeta.Annotations[witesandLocation])
+	log.Debug().Msgf("Sidecar injection annotation: '%s:%s'", witesandLocation, loc)
+	if inject != "" {
+		switch inject {
+		case "enabled", "yes", "true":
+			return true, nil
+		case "disabled", "no", "false":
+			return false, nil
+		default:
+			return false, errors.Errorf("Invalid annotion value specified for annotation %q: %s", annotationInject, inject)
+		}
+	}
+
 	// If we reached here, it means the namespace was annotated for OSM to monitor
 	// and no POD level sidecar injection overrides are present.
 	return true, nil
+}
+
+func (wh *webhook) locationInfo(pod *corev1.Pod, namespace string) (bool, string) {
+	// If the request belongs to a namespace we are not monitoring, skip it
+	if !wh.isNamespaceAllowed(namespace) {
+		log.Info().Msgf("Request belongs to namespace=%s not in the list of monitored namespaces", namespace)
+		return false, ""
+	}
+
+	// Check if the POD is annotated for witesandLocation
+	locInfo := strings.ToLower(pod.ObjectMeta.Annotations[witesandLocation])
+	if locInfo != "" {
+		log.Debug().Msgf("Sidecar injection annotation: '%s:%s'", witesandLocation, locInfo)
+		return true, locInfo
+	}
+
+	return false, ""
 }
 
 func toAdmissionError(err error) *v1beta1.AdmissionResponse {

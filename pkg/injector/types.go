@@ -15,6 +15,9 @@ const (
 	annotationInject = "openservicemesh.io/sidecar-injection"
 
 	envoyBootstrapConfigVolume = "envoy-bootstrap-config-volume"
+
+	//Witesand Annotations
+	witesandLocation = "ws.io/cluster-location"
 )
 
 var log = logger.New("sidecar-injector")
